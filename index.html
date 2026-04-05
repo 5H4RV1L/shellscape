@@ -9,22 +9,18 @@
 <body>
     <div id="screen">
 
-    <!-- ── TOP BAR ── -->
     <div id="topbar">
       <span class="title glitch">SHELLSCAPE v2.0</span>
       <span class="status" id="level-badge">NOT CONNECTED</span>
       <span class="clock" id="clock">00:00:00</span>
     </div>
 
-    <!-- ── PROGRESS ── -->
     <div id="progress-bar">
       <div id="progress-fill" style="width:0%"></div>
     </div>
 
-    <!-- ── OUTPUT ── -->
     <div id="terminal"></div>
 
-    <!-- ── INPUT ROW ── -->
     <div id="input-area">
       <span id="prompt-label">
         <span id="prompt-user">guest</span><span class="at">@</span><span
@@ -41,7 +37,6 @@
 
   </div>
 
-  <!-- JS load order matters: levels → commands → engine → terminal -->
   <script src="levels.js"></script>
   <script src="commands.js"></script>
   <script src="engine.js"></script>
