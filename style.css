@@ -196,3 +196,9 @@ body::after {
   100% { text-shadow: none; }
 }
 .glitch { animation: glitch 4s infinite; }
+
+.cursor-inline {
+  color: var(--green);
+  text-shadow: var(--glow);
+  animation: blink 1s step-end infinite;
+}
