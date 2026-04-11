@@ -33,8 +33,19 @@ function syncMirror() {
   mirror.textContent = cmdInput.value;
 }
 
+function updateCursorPosition() {
+  const pos = cmdInput.selectionStart;
+  const text = cmdInput.value;
+
+  const before = text.slice(0, pos);
+  const after = text.slice(pos);
+
+  mirror.innerHTML =
+    before + '<span class="cursor-inline">▋</span>' + after;
+}
+
 function onTyping() {
-  syncMirror();
+  updateCursorPosition()
   cursorEl.classList.remove("blink");
   cursorEl.classList.add("typing");
   clearTimeout(blinkResetTimer);
@@ -84,6 +95,15 @@ function updateTabHint() {
 cmdInput.addEventListener("input", () => {
   onTyping();
   updateTabHint();
+  updateCursorPosition();
+});
+
+cmdInput.addEventListener("click", updateCursorPosition);
+
+cmdInput.addEventListener("keyup", updateCursorPosition);
+
+cmdInput.addEventListener("keydown", () => {
+  setTimeout(updateCursorPosition, 0);
 });
 
 cmdInput.addEventListener("keydown", e => {
@@ -94,7 +114,7 @@ cmdInput.addEventListener("keydown", e => {
       const val = cmdInput.value;
       cmdInput.value = "";
       tabHint.textContent = "";
-      syncMirror();
+      updateCursorPosition()
       pushHistory(val);
       execute(val);
       break;
@@ -106,7 +126,7 @@ cmdInput.addEventListener("keydown", e => {
       if (hint) {
         cmdInput.value += hint;
         tabHint.textContent = "";
-        syncMirror();
+        updateCursorPosition()
       }
       break;
     }
@@ -116,7 +136,7 @@ cmdInput.addEventListener("keydown", e => {
       if (histIndex < cmdHistory.length - 1) {
         histIndex++;
         cmdInput.value = cmdHistory[histIndex];
-        syncMirror();
+        updateCursorPosition()
       }
       break;
     }
@@ -130,7 +150,7 @@ cmdInput.addEventListener("keydown", e => {
         histIndex = -1;
         cmdInput.value = "";
       }
-      syncMirror();
+      updateCursorPosition()
       break;
     }
   }
@@ -173,7 +193,7 @@ async function boot() {
     "[  0.091] Initializing virtual filesystem...    OK",
     "[  0.213] Loading level engine...               OK",
     "[  0.334] Mounting /home...                     OK",
-    "[  0.445] Loading 26 levels across 5 tracks...  OK",
+    "[  0.445] Loading 31 levels across 5 tracks...  OK",
     "[  0.512] Starting terminal daemon...           OK",
     "[  0.601] System ready.",
     "",
@@ -182,4 +202,5 @@ async function boot() {
   connectTo("guest@shellscape");
 }
 
+updateCursorPosition();
 boot();
