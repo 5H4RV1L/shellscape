@@ -12,7 +12,7 @@ Instead of learning tools passively, users actively **solve challenges using rea
 * 🖥️ **Fully Terminal-Based UI** — No buttons, no shortcuts — just commands
 * 🔐 **Real-World Tools Simulation**:
 
-  * Linux: `ls`, `grep`, `find`, `env`
+  * Linux: `ls`, `cd`, `grep`, `find`, `env`
   * Network: `nmap`, `netstat`, `whois`, `dig`
   * Crypto: `base64`, `rot13`, `john`, `xor`
   * Web: `curl`, `gobuster`, `cookies`
