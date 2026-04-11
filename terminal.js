@@ -81,7 +81,7 @@ const ALL_CMDS = [
   // forensics
   "file", "strings", "exif",
   // terminal
-  "clear", "ssh", "help"
+  "clear", "ssh", "help", "report"
 ];
 
 function updateTabHint() {
@@ -183,6 +183,7 @@ function showLobby() {
   print("  │  🔍 Forensics       ssh level0@forensics       5 levels      │", "out");
   print("  └──────────────────────────────────────────────────────────────┘", "dim");
   print("", "out");
+  print("  Report bugs anytime with: report", "warn");
   print("  Type  help  for a full command reference.", "dim");
   print("", "out");
 }
