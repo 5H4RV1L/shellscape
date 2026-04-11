@@ -1,28 +1,61 @@
 //  COMMANDS
 //  Each handler: (level, arg) → { text, cls } | null
 //
-//  New commands vs v1:
-//    ls -l          file permissions (SUID detection)
-//    find           filesystem search
-//    env            environment variable dump
-//    rot13          ROT13 decode
-//    xxd            hex dump viewer
-//    decode-hex     hex string → ASCII
-//    hash-id        identify hash algorithm
-//    john           simulated dictionary attack
-//    xor            XOR decryption
-//    base64 -d      decode string directly (no file)
-//    curl           HTTP GET simulation
-//    curl -I        HTTP header inspection
-//    gobuster       directory brute-force simulation
-//    cookies        session cookie inspector
-//    file           magic byte / file type identifier
-//    strings        printable string extractor
-//    exif           EXIF metadata reader
-//    netstat        active connection lister
-//    whois          domain WHOIS lookup
-//    dig            DNS record enumeration
-//    nmap           port scanner (basic + -sV)
+//  Commands:
+//    ls / ls -a / ls -l   list directory contents
+//    cd <dir> / cd ..     navigate into / out of directories
+//    cat <file>           print file contents
+//    pwd                  print working directory
+//    whoami               print current user
+//    echo <text>          print text
+//    grep <word> <file|*> search file(s) for a word
+//    find <path> -name    find files matching pattern
+//    env                  list environment variables
+//    ls -l                file permissions (SUID detection)
+//    rot13                ROT13 decode
+//    xxd                  hex dump viewer
+//    decode-hex           hex string → ASCII
+//    hash-id              identify hash algorithm
+//    john                 simulated dictionary attack
+//    xor                  XOR decryption
+//    base64 -d            decode string directly (no file)
+//    curl                 HTTP GET simulation
+//    curl -I              HTTP header inspection
+//    gobuster             directory brute-force simulation
+//    cookies              session cookie inspector
+//    file                 magic byte / file type identifier
+//    strings              printable string extractor
+//    exif                 EXIF metadata reader
+//    netstat              active connection lister
+//    whois                domain WHOIS lookup
+//    dig                  DNS record enumeration
+//    nmap                 port scanner (basic + -sV)
+
+// ── Per-session working directory ────────────────────────────
+// currentPath is an array of directory names relative to fs root.
+// e.g. [] = root home dir, ["var","tmp"] = /home/user/var/tmp
+let currentPath = [];
+
+// Walk the fs tree from the level root, following currentPath.
+function getFSNode(level, pathParts) {
+  if (!level.fs) return null;
+  let node = level.fs;
+  for (const part of pathParts) {
+    if (!node.children || !node.children[part]) return null;
+    node = node.children[part];
+  }
+  return node;
+}
+
+// Reset working directory when switching levels (called externally).
+function resetPath() { currentPath = []; }
+
+// Build a display path string like /home/user or /home/user/var/tmp
+function buildDisplayPath(levelKey) {
+  const user = levelKey.split("@")[0];
+  const base = `/home/${user}`;
+  return currentPath.length === 0 ? base : base + "/" + currentPath.join("/");
+}
 
 function rot13str(s) {
   return s.replace(/[a-zA-Z]/g, c => {
@@ -72,6 +105,8 @@ const COMMANDS = {
     return { cls: "info", text: `
 LINUX BASICS
   ls / ls -a / ls -l     – list files (all / long format)
+  cd <dir>               – change into a directory
+  cd ..                  – go up one directory
   cat <file>             – print file contents
   pwd                    – print working directory
   whoami                 – print current user
@@ -116,12 +151,48 @@ TERMINAL
 `.trim() };
   },
 
+  cd(level, arg) {
+    if (!arg || arg === "~") {
+      currentPath = [];
+      return { text: "", cls: "out" };
+    }
+
+    if (arg === "..") {
+      if (currentPath.length === 0) return { text: "cd: already at home directory", cls: "err" };
+      currentPath = currentPath.slice(0, -1);
+      return null; // silent success like real bash
+    }
+
+    // Handle absolute paths starting with / by treating as relative from root
+    const parts = arg.replace(/^\/+/, "").split("/").filter(Boolean);
+    const testPath = [...currentPath, ...parts];
+    const node = getFSNode(level, testPath);
+
+    if (!node)            return { text: `cd: ${arg}: No such file or directory`, cls: "err" };
+    if (node.type !== "dir") return { text: `cd: ${arg}: Not a directory`, cls: "err" };
+
+    currentPath = testPath;
+    return null; // silent success
+  },
+
   ls(level, arg) {
-    const flags      = arg.split(" ").filter(a => a.startsWith("-")).join("");
+    const flags      = (arg || "").split(" ").filter(a => a.startsWith("-")).join("");
     const showHidden = flags.includes("a");
     const longFmt    = flags.includes("l");
 
-    let names = Object.keys(level.files).filter(f => showHidden || !f.startsWith("."));
+    // Get the current directory node from the fs tree, fallback to flat files
+    const node = getFSNode(level, currentPath);
+    let names;
+
+    if (node && node.children) {
+      names = Object.keys(node.children).filter(f => showHidden || !f.startsWith("."));
+      // Append "/" suffix to directories for visual clarity
+      names = names.map(f => node.children[f].type === "dir" ? f + "/" : f);
+    } else {
+      // Fallback: flat files map (legacy levels)
+      names = Object.keys(level.files).filter(f => showHidden || !f.startsWith("."));
+    }
+
     if (names.length === 0) return { text: "(empty directory)", cls: "dim" };
 
     if (longFmt) {
@@ -132,8 +203,10 @@ TERMINAL
         return "-rw-r--r--  1 user  user   256";
       };
       const lines = ["total " + names.length * 8];
+      // Strip trailing "/" when looking up permissions
       names.forEach(f => {
-        lines.push((perms[f] || defaultPerm(f)) + "  " + f);
+        const key = f.endsWith("/") ? f.slice(0, -1) : f;
+        lines.push((perms[key] || defaultPerm(f)) + "  " + f);
       });
       return { text: lines.join("\n"), cls: "out" };
     }
@@ -142,17 +215,32 @@ TERMINAL
   },
 
   cat(level, arg) {
-    if (!arg)                 return { text: "Usage: cat <file>", cls: "err" };
-    if (!(arg in level.files))return { text: `cat: ${arg}: No such file or directory`, cls: "err" };
+    if (!arg) return { text: "Usage: cat <file>", cls: "err" };
+
+    // Try resolving relative to current directory in fs tree
+    if (level.fs) {
+      const parts = arg.split("/").filter(Boolean);
+      const fileParts = [...currentPath, ...parts];
+      const node = getFSNode(level, fileParts);
+      if (node) {
+        if (node.type === "dir") return { text: `cat: ${arg}: Is a directory`, cls: "err" };
+        if (!node.content)       return { text: "(empty file)", cls: "dim" };
+        return { text: node.content, cls: "out" };
+      }
+      // not found in tree
+      return { text: `cat: ${arg}: No such file or directory`, cls: "err" };
+    }
+
+    // Fallback: flat files map
+    if (!(arg in level.files)) return { text: `cat: ${arg}: No such file or directory`, cls: "err" };
     const c = level.files[arg];
-    if (c === null)           return { text: `cat: ${arg}: Is a directory`, cls: "err" };
-    if (c === "")             return { text: "(empty file)", cls: "dim" };
+    if (c === null) return { text: `cat: ${arg}: Is a directory`, cls: "err" };
+    if (c === "")   return { text: "(empty file)", cls: "dim" };
     return { text: c, cls: "out" };
   },
 
   pwd() {
-    const [user] = currentLevelKey.split("@");
-    return { text: `/home/${user}`, cls: "out" };
+    return { text: buildDisplayPath(currentLevelKey), cls: "out" };
   },
 
   whoami() {
@@ -197,10 +285,17 @@ TERMINAL
     const pattern = nameMatch[1].replace(/\./g, "\\.").replace(/\*/g, ".*");
     const regex   = new RegExp("^" + pattern + "$", "i");
 
-    const found = Object.keys(level.files).filter(f => regex.test(f.split("/").pop()));
+    // Search the full flat files map (find always searches recursively)
+    const found = Object.keys(level.files).filter(f => {
+      const basename = f.replace(/\/$/, "").split("/").pop();
+      return regex.test(basename);
+    });
+
     if (found.length === 0) return { text: "(no files found)", cls: "dim" };
 
-    return { text: found.map(f => "/" + f).join("\n"), cls: "out" };
+    // Display as full paths
+    const user = currentLevelKey.split("@")[0];
+    return { text: found.map(f => `/home/${user}/` + f).join("\n"), cls: "out" };
   },
 
   env(level) {
