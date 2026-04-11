@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shellscape</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shellscape</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="screen">
 
+  <div id="screen">
+
+    <!-- ── TOP BAR ── -->
     <div id="topbar">
       <span class="title glitch">SHELLSCAPE v2.0</span>
       <span class="status" id="level-badge">NOT CONNECTED</span>
       <span class="clock" id="clock">00:00:00</span>
     </div>
 
+    <!-- ── PROGRESS ── -->
     <div id="progress-bar">
       <div id="progress-fill" style="width:0%"></div>
     </div>
 
+    <!-- ── OUTPUT ── -->
     <div id="terminal"></div>
 
+    <!-- ── INPUT ROW ── -->
     <div id="input-area">
       <span id="prompt-label">
         <span id="prompt-user">guest</span><span class="at">@</span><span
@@ -28,7 +33,7 @@
       </span>
 
       <div id="input-wrapper">
-        <span id="input-mirror"></span><span id="cursor" class="blink">▋</span>
+        <span id="input-mirror"></span>
         <input id="cmd-input" type="text" autocomplete="off" spellcheck="false" autofocus />
       </div>
 
@@ -37,6 +42,7 @@
 
   </div>
 
+  <!-- JS load order matters: levels → commands → engine → terminal -->
   <script src="levels.js"></script>
   <script src="commands.js"></script>
   <script src="engine.js"></script>
