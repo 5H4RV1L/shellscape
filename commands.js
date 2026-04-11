@@ -147,6 +147,7 @@ FORENSICS
 TERMINAL
   clear                  – clear the screen
   ssh <user@host>        – connect to a level
+  report                 – report a bug / contact developer
   help                   – show this reference
 `.trim() };
   },
@@ -636,6 +637,14 @@ TERMINAL
   clear() {
     document.getElementById("terminal").innerHTML = "";
     return null;
-  }
+  },
+  
+  report() {
+    window.open("https://sharvil.site/#contact", "_blank");
+    return {
+      text: "Opening bug report portal...",
+      cls: "info"
+    };
+  }  
 
 };
