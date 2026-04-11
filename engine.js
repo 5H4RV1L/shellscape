@@ -81,7 +81,10 @@ function execute(raw) {
   if (!input) return;
 
   if (!awaitingPassword) {
-    print(document.getElementById("prompt-label").textContent + input, "cmd");
+    const user = document.getElementById("prompt-user").textContent;
+    const host = document.getElementById("prompt-host").textContent;
+    const fullPrompt = `${user}@${host}:~$ ${input}`;     
+    print(fullPrompt, "cmd");
   }
 
   if (awaitingPassword) {
@@ -93,7 +96,7 @@ function execute(raw) {
   const level  = LEVELS[currentLevelKey];
 
   if (tokens[0] === "ssh") {
-    const res = handleSSH(tokens.slice(1).join(" "));
+    const res = handleSSH(tokens[1]);
     if (res) print(res.text, res.cls);
     return;
   }
