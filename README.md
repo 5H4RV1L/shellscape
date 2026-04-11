@@ -110,35 +110,14 @@ Shellscape/
 ## 🛠️ Tech Stack
 
 * Frontend: HTML, CSS, JavaScript
-* Backend (optional): Django
 * Runtime: Browser-based terminal simulation
 
 ---
 
 ## ⚙️ Setup
 
-### Option 1 — Simple (Frontend Only)
-
 1. Clone the repo
 2. Open `index.html` in a browser
-
-### Option 2 — Django (Recommended)
-
-1. Set up a Django project
-2. Place templates and static files accordingly
-3. Add route:
-
-```python
-path("levels/<str:level>", views.level_view)
-```
-
-4. Run server:
-
-```bash
-python manage.py runserver
-```
-
----
 
 ## 🎯 Example Gameplay
 
