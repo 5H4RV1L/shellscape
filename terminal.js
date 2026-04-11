@@ -1,3 +1,27 @@
+function isMobile() {
+  return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
+    || window.innerWidth < 900;
+}
+
+if (isMobile()) {
+  document.body.innerHTML = `
+    <div style="
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      background:#020f09;
+      color:#00ff9c;
+      font-family:monospace;
+      text-align:center;
+      padding:20px;
+    ">
+      ⚠ Shellscape is desktop-only.<br><br>
+      Use a laptop/PC for full experience.
+    </div>
+  `;
+}
+
 const termEl   = document.getElementById("terminal");
 const cmdInput = document.getElementById("cmd-input");
 const mirror   = document.getElementById("input-mirror");
