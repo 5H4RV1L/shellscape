@@ -1,26 +1,68 @@
-function isMobile() {
-  return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
-    || window.innerWidth < 900;
-}
+(function () {
+  function isMobile() {
+    return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
+      || window.innerWidth < 900;
+  }
 
-if (isMobile()) {
-  document.body.innerHTML = `
-    <div style="
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      background:#020f09;
-      color:#00ff9c;
-      font-family:monospace;
-      text-align:center;
-      padding:20px;
-    ">
-      ⚠ Shellscape is desktop-only.<br><br>
-      Use a laptop/PC for full experience.
-    </div>
-  `;
-}
+  if (isMobile()) {
+    const lines = [
+      "[ 0.000 ] Booting Shellscape kernel...",
+      "[ 0.142 ] Initializing terminal interface...",
+      "[ 0.287 ] Checking input devices...",
+      "[ 0.391 ] Keyboard: NOT DETECTED",
+      "[ 0.472 ] Verifying display resolution...",
+      "[ 0.558 ] Resolution: UNSUPPORTED",
+      "[ 0.663 ] Device classification: MOBILE",
+      "[ 0.801 ] Applying compatibility layer...",
+      "[ 0.944 ] ERROR: Compatibility layer failed",
+      "",
+      ">> ACCESS DENIED",
+      ">> DEVICE NOT SUPPORTED",
+      ">> KEYBOARD REQUIRED",
+      "",
+      ">> ⚠ Shellscape is desktop-only.",
+      ">> Use a laptop/PC for full experience."
+    ];
+
+    document.body.innerHTML = `
+      <div id="boot-screen" style="
+        background:#020f09;
+        color:#00ff9c;
+        font-family: 'Share Tech Mono', monospace;
+        padding: 24px;
+        padding-top: 30vh;
+        height:100vh;
+        display:flex;
+        flex-direction:column;
+        justify-content:flex-start;
+      "></div>
+    `;
+
+    const container = document.getElementById("boot-screen");
+
+    let i = 0;
+    function typeLine() {
+      if (i >= lines.length) return;
+
+      const line = document.createElement("div");
+      line.style.opacity = "0";
+      line.style.transition = "opacity 0.2s ease";
+      line.textContent = lines[i++];
+
+      container.appendChild(line);
+
+      setTimeout(() => {
+        line.style.opacity = "1";
+      }, 20);
+
+      setTimeout(typeLine, 120);
+    }
+
+    typeLine();
+
+    return; 
+  }
+})();
 
 const termEl   = document.getElementById("terminal");
 const cmdInput = document.getElementById("cmd-input");
