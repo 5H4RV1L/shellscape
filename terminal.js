@@ -147,7 +147,7 @@ const ALL_CMDS = [
   // forensics
   "file", "strings", "exif",
   // terminal
-  "clear", "ssh", "help", "report"
+  "clear", "ssh", "help", "report",
 ];
 
 function updateTabHint() {
@@ -237,26 +237,65 @@ function showLobby() {
   termEl.innerHTML = "";
   printAscii(ASCII_LOGO);
   print("", "out");
-  print("  Learn real cybersecurity tools by playing.", "info");
-  print("", "out");
-  print("  ┌──────────────────────────────────────────────────────────────┐", "dim");
-  print("  │  TRACK             COMMAND                    LEVELS          │", "dim");
-  print("  ├──────────────────────────────────────────────────────────────┤", "dim");
-  print("  │  🐧 Linux           ssh level0@linux           8 levels      │", "out");
-  print("  │  🌐 Network         ssh level0@network         6 levels      │", "out");
-  print("  │  🔐 Crypto          ssh level0@crypto          7 levels      │", "out");
-  print("  │  🕸  Web             ssh level0@web             5 levels      │", "out");
-  print("  │  🔍 Forensics       ssh level0@forensics       5 levels      │", "out");
-  print("  └──────────────────────────────────────────────────────────────┘", "dim");
-  print("", "out");
-  print("  Report bugs anytime with: report", "warn");
-  print("  Type  help  for a full command reference.", "dim");
-  print("", "out");
+
+  const seen = sessionStorage.getItem("seenOnboarding");
+
+  if (!seen) {
+    sessionStorage.setItem("seenOnboarding", "true");
+
+    print("  A terminal-based cybersecurity learning game.", "dim");
+    print("", "out");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("  START HERE", "success");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("", "out");
+    print("  ssh level0@linux", "cmd");
+    print("", "out");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("  YOUR GOAL", "success");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("", "out");
+    print("  Find passwords hidden in each level.", "out");
+    print("  Use them with ssh to connect to the next level.", "out");
+    print("  Example: ssh level1@linux  (after finding the password)", "dim");
+    print("", "out");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("  AVAILABLE TRACKS", "success");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("", "out");
+    print("  ssh level0@linux       Linux fundamentals   (8 levels)", "out");
+    print("  ssh level0@network     Networking tools     (6 levels)", "out");
+    print("  ssh level0@crypto      Cryptography         (7 levels)", "out");
+    print("  ssh level0@web         Web security         (5 levels)", "out");
+    print("  ssh level0@forensics   Digital forensics    (5 levels)", "out");
+    print("", "out");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("  Type 'help' if you get stuck.", "warn");
+    print("  Report bugs anytime with: report", "warn");
+    print("", "out");
+
+  } else {
+
+    print("", "out");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("  AVAILABLE TRACKS", "success");
+    print("  ────────────────────────────────────────────────", "dim");
+    print("", "out");
+    print("  ssh level0@linux       Linux fundamentals   (8 levels)", "out");
+    print("  ssh level0@network     Networking tools     (6 levels)", "out");
+    print("  ssh level0@crypto      Cryptography         (7 levels)", "out");
+    print("  ssh level0@web         Web security         (5 levels)", "out");
+    print("  ssh level0@forensics   Digital forensics    (5 levels)", "out");
+    print("", "out");
+    print("  Type 'help' for commands.  Report bugs with: report", "warn");
+    print("", "out");
+
+  }
 }
 
 async function boot() {
   const msgs = [
-    "[  0.000] Booting SHELLSCAPE kernel 2.0.0...",
+    "[  0.000] Booting SHELLSCAPE kernel 2.3.1...",
     "[  0.091] Initializing virtual filesystem...    OK",
     "[  0.213] Loading level engine...               OK",
     "[  0.334] Mounting /home...                     OK",
