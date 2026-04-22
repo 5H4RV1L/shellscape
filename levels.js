@@ -425,33 +425,33 @@ const LEVELS = initLevels({
   "level3@network": {
     password: "backdoor",
     track: "network",
-    objective: "WHOIS is a public database of domain ownership. Run 'whois target.htb' and examine the output. Find the Admin Email address — the part before the @ symbol is the password.",
+    objective: "WHOIS is a public database of domain ownership. Run 'whois target.xyz' and examine the output. Find the Admin Email address — the part before the @ symbol is the password.",
     lesson: "WHOIS harvests real names, emails, registration history, and nameservers from public records. One admin email is enough to launch a targeted spear-phishing campaign. Tools like theHarvester and Maltego automate large-scale WHOIS collection for OSINT operations.",
     fs: {
       type: "dir",
       children: {
         "readme.txt": {
           type: "file",
-          content: "You need to gather OSINT on target.htb before attacking it.\n\nRun: whois target.htb\n\nFind the 'Admin Email' field in the output.\nThe username (the part before the @ symbol) is the password."
+          content: "You need to gather OSINT on target.xyz before attacking it.\n\nRun: whois target.xyz\n\nFind the 'Admin Email' field in the output.\nThe username (the part before the @ symbol) is the password."
         }
       }
     },
     whoisData: {
-      "target.htb": [
-        "Domain Name: TARGET.HTB",
+      "target.xyz": [
+        "Domain Name: TARGET.XYZ",
         "Registry Domain ID: 192837465-HTB",
         "Registrar: HTB Domains LLC",
         "Updated Date: 2023-11-02",
         "Creation Date: 2019-03-15",
         "Expiry Date:   2025-03-15",
-        "Name Server: ns1.target.htb",
-        "Name Server: ns2.target.htb",
+        "Name Server: ns1.target.xyz",
+        "Name Server: ns2.target.xyz",
         "Registrant Name: John Smith",
         "Registrant Org:  Target Corp",
         "Registrant Country: US",
-        "Admin Email: netadmin@target.htb",
-        "Tech Email:  tech-ops@target.htb",
-        "Abuse Email: abuse@target.htb",
+        "Admin Email: netadmin@target.xyz",
+        "Tech Email:  tech-ops@target.xyz",
+        "Abuse Email: abuse@target.xyz",
         "DNSSEC: unsigned"
       ]
     }
@@ -460,30 +460,30 @@ const LEVELS = initLevels({
   "level4@network": {
     password: "netadmin",
     track: "network",
-    objective: "DNS holds more than just IP addresses. Run 'dig target.htb ANY' to fetch all DNS record types. TXT records sometimes contain accidental secrets — read them carefully. One TXT record contains a staging password.",
+    objective: "DNS holds more than just IP addresses. Run 'dig target.xyz ANY' to fetch all DNS record types. TXT records sometimes contain accidental secrets — read them carefully. One TXT record contains a staging password.",
     lesson: "DNS TXT records exist for SPF/DKIM/domain verification — but sysadmins accidentally store internal notes in them. DNS enumeration (dig, fierce, dnsx, amass) also reveals subdomains and internal IPs. Always run DNS enumeration before web recon — it's free intelligence.",
     fs: {
       type: "dir",
       children: {
         "readme.txt": {
           type: "file",
-          content: "DNS records contain more than just IP addresses.\nTXT records are meant for email auth (SPF/DKIM), but admins sometimes leave notes in them.\n\nRun: dig target.htb ANY\n\nRead all the TXT records. One of them has a staging password embedded.\nThat password value is the answer."
+          content: "DNS records contain more than just IP addresses.\nTXT records are meant for email auth (SPF/DKIM), but admins sometimes leave notes in them.\n\nRun: dig target.xyz ANY\n\nRead all the TXT records. One of them has a staging password embedded.\nThat password value is the answer."
         }
       }
     },
     dnsData: {
-      "target.htb": {
+      "target.xyz": {
         "A":   ["192.168.10.50"],
         "AAAA":[],
-        "MX":  ["10 mail.target.htb", "20 backup-mail.target.htb"],
-        "NS":  ["ns1.target.htb", "ns2.target.htb"],
+        "MX":  ["10 mail.target.xyz", "20 backup-mail.target.xyz"],
+        "NS":  ["ns1.target.xyz", "ns2.target.xyz"],
         "TXT": [
-          "v=spf1 include:mail.target.htb -all",
+          "v=spf1 include:mail.target.xyz -all",
           "google-site-verification=dGFyZ2V0Y29ycA==",
           "MS=ms12345678",
           "internal-note: staging_pass=dnsrecon  <-- TODO: remove this!"
         ],
-        "SOA": ["ns1.target.htb. admin.target.htb. 2024010101 3600 900 604800 300"]
+        "SOA": ["ns1.target.xyz. admin.target.xyz. 2024010101 3600 900 604800 300"]
       }
     }
   },
@@ -664,43 +664,43 @@ const LEVELS = initLevels({
   "level0@web": {
     password: null,
     track: "web",
-    objective: "Every web server has a 'robots.txt' file that tells crawlers which paths to avoid — but it also hands attackers a map of hidden pages. Fetch it with: curl http://target.htb/robots.txt — then visit one of the Disallowed paths to find the password.",
+    objective: "Every web server has a 'robots.txt' file that tells crawlers which paths to avoid — but it also hands attackers a map of hidden pages. Fetch it with: curl http://target.xyz/robots.txt — then visit one of the Disallowed paths to find the password.",
     lesson: "robots.txt is always the first file you check on a web target. Real targets have listed /admin, /.git, /backup, and /staging in their Disallow rules. The Disallowed paths are exactly what you want most — they're the ones the admin was trying to hide from search engines.",
     fs: {
       type: "dir",
       children: {
         "readme.txt": {
           type: "file",
-          content: "Target: http://target.htb\n\nStep 1 — Fetch the robots file:\n  curl http://target.htb/robots.txt\n\nStep 2 — Read the 'Disallow' entries. One of those paths contains credentials.\n  curl http://target.htb/<path>\n\nThe password is inside that hidden page."
+          content: "Target: http://target.xyz\n\nStep 1 — Fetch the robots file:\n  curl http://target.xyz/robots.txt\n\nStep 2 — Read the 'Disallow' entries. One of those paths contains credentials.\n  curl http://target.xyz/<path>\n\nThe password is inside that hidden page."
         }
       }
     },
     web: {
-      "http://target.htb/":              "<html><body><h1>Welcome to Target Corp</h1></body></html>",
-      "http://target.htb/robots.txt":    "User-agent: *\nDisallow: /admin\nDisallow: /secret-backup\nDisallow: /.git\nDisallow: /api/internal",
-      "http://target.htb/admin":         "403 Forbidden",
-      "http://target.htb/secret-backup": "# Backup credentials - DO NOT COMMIT\nftp_user: ftpadmin\nftp_pass: webmaster22\ndb_pass:  webmaster22",
-      "http://target.htb/.git":          "403 Forbidden — but .git exposure = full source code dump via git-dumper!",
-      "http://target.htb/api/internal":  "401 Unauthorized — API token required."
+      "http://target.xyz/":              "<html><body><h1>Welcome to Target Corp</h1></body></html>",
+      "http://target.xyz/robots.txt":    "User-agent: *\nDisallow: /admin\nDisallow: /secret-backup\nDisallow: /.git\nDisallow: /api/internal",
+      "http://target.xyz/admin":         "403 Forbidden",
+      "http://target.xyz/secret-backup": "# Backup credentials - DO NOT COMMIT\nftp_user: ftpadmin\nftp_pass: webmaster22\ndb_pass:  webmaster22",
+      "http://target.xyz/.git":          "403 Forbidden — but .git exposure = full source code dump via git-dumper!",
+      "http://target.xyz/api/internal":  "401 Unauthorized — API token required."
     }
   },
 
   "level1@web": {
     password: "webmaster22",
     track: "web",
-    objective: "HTTP response headers reveal what software is running on the server — without touching the application itself. Fetch just the headers with: curl -I http://target.htb/ — Find the 'Server' header. Take the version number and remove all dots to get the password (e.g. Apache/2.4.49 → apache2449).",
+    objective: "HTTP response headers reveal what software is running on the server — without touching the application itself. Fetch just the headers with: curl -I http://target.xyz/ — Find the 'Server' header. Take the version number and remove all dots to get the password (e.g. Apache/2.4.49 → apache2449).",
     lesson: "HTTP headers leak critical intel: server software, version numbers, backend frameworks. 'Server: Apache/2.4.49' maps directly to CVE-2021-41773 (path traversal + unauthenticated RCE). 'X-Powered-By: PHP/7.2' reveals an end-of-life version. Headers are free recon — check them before touching anything else.",
     fs: {
       type: "dir",
       children: {
         "readme.txt": {
           type: "file",
-          content: "Server banners in HTTP headers map directly to known CVEs.\n\nFetch only the response headers (no body):\n  curl -I http://target.htb/\n\nFind the 'Server:' line. Take the version number and remove all dots.\nExample: Apache/2.4.49 → password is: apache2449\n\n⚠ The Apache version shown here has CVE-2021-41773 — a critical real-world RCE."
+          content: "Server banners in HTTP headers map directly to known CVEs.\n\nFetch only the response headers (no body):\n  curl -I http://target.xyz/\n\nFind the 'Server:' line. Take the version number and remove all dots.\nExample: Apache/2.4.49 → password is: apache2449\n\n⚠ The Apache version shown here has CVE-2021-41773 — a critical real-world RCE."
         }
       }
     },
     webHeaders: {
-      "http://target.htb/": {
+      "http://target.xyz/": {
         "HTTP/1.1":               "200 OK",
         "Server":                 "Apache/2.4.49 (Debian)",
         "X-Powered-By":           "PHP/7.4.3",
@@ -715,22 +715,22 @@ const LEVELS = initLevels({
   "level2@web": {
     password: "apache2449",
     track: "web",
-    objective: "The web server has hidden directories that don't appear in any links. Use 'gobuster http://target.htb/' to brute-force common directory names. One of the discovered paths leads to an exposed admin console. Fetch it with 'curl' to find the password.",
+    objective: "The web server has hidden directories that don't appear in any links. Use 'gobuster http://target.xyz/' to brute-force common directory names. One of the discovered paths leads to an exposed admin console. Fetch it with 'curl' to find the password.",
     lesson: "gobuster and dirsearch fuzz web servers with wordlists of thousands of common paths. Developers routinely forget to protect /admin, /dev, /backup, /.env, /api/v1. Discovering an exposed admin panel or debug page is often the initial foothold in a real pentest.",
     fs: {
       type: "dir",
       children: {
         "readme.txt": {
           type: "file",
-          content: "Hidden directories host admin panels and debug interfaces — but they don't appear in any links.\n\nBrute-force common directory names:\n  gobuster http://target.htb/\n\nWhen you find something interesting (status 200), fetch it:\n  curl http://target.htb/<path>\n\nThe password is inside the hidden page."
+          content: "Hidden directories host admin panels and debug interfaces — but they don't appear in any links.\n\nBrute-force common directory names:\n  gobuster http://target.xyz/\n\nWhen you find something interesting (status 200), fetch it:\n  curl http://target.xyz/<path>\n\nThe password is inside the hidden page."
         }
       }
     },
     web: {
-      "http://target.htb/admin-console": "=== ADMIN CONSOLE ===\nStatus: DEBUG MODE ON\nDB connection: active\nAdmin pass: supersecret\nWARNING: This page should NOT be public!"
+      "http://target.xyz/admin-console": "=== ADMIN CONSOLE ===\nStatus: DEBUG MODE ON\nDB connection: active\nAdmin pass: supersecret\nWARNING: This page should NOT be public!"
     },
     gobusterRes: {
-      "http://target.htb/": [
+      "http://target.xyz/": [
         "/index.html         [200]",
         "/about.html         [200]",
         "/images/            [301]",
@@ -744,19 +744,19 @@ const LEVELS = initLevels({
   "level3@web": {
     password: "supersecret",
     track: "web",
-    objective: "A session cookie was captured from an authenticated user. Run 'cookies http://target.htb/' to inspect it. The 'user_session' cookie value is Base64-encoded JSON. Decode it with: base64 -d <value> — the password field inside the JSON is the answer.",
+    objective: "A session cookie was captured from an authenticated user. Run 'cookies http://target.xyz/' to inspect it. The 'user_session' cookie value is Base64-encoded JSON. Decode it with: base64 -d <value> — the password field inside the JSON is the answer.",
     lesson: "Session cookies often store Base64-encoded JSON user data. Poorly built apps validate that the cookie exists but not what it contains. Attackers decode the JSON, change 'role':'user' to 'role':'admin', re-encode it, and replay the modified cookie. This is Broken Access Control — OWASP Top 10 #1.",
     fs: {
       type: "dir",
       children: {
         "readme.txt": {
           type: "file",
-          content: "A session cookie was captured from an authenticated user session.\n\nStep 1 — View the cookies:\n  cookies http://target.htb/\n\nStep 2 — Look for the 'user_session' cookie. Its value is Base64-encoded JSON.\n  base64 -d <cookie_value>\n\nStep 3 — Read the JSON. The 'password' field is the answer."
+          content: "A session cookie was captured from an authenticated user session.\n\nStep 1 — View the cookies:\n  cookies http://target.xyz/\n\nStep 2 — Look for the 'user_session' cookie. Its value is Base64-encoded JSON.\n  base64 -d <cookie_value>\n\nStep 3 — Read the JSON. The 'password' field is the answer."
         }
       }
     },
     cookieData: {
-      "http://target.htb/": {
+      "http://target.xyz/": {
         "PHPSESSID":    "abc123def456",
         "user_session": "eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwicGFzc3dvcmQiOiJjb29raWVtb25zdGVyIiwiZXhwIjoxNzAwMDAwMDAwfQ=="
       }
@@ -909,6 +909,174 @@ const LEVELS = initLevels({
         "Comment                   : metadataleek",
         "⚠ Warning                 : GPS present — physical location exposed!"
       ]
+    }
+  },
+
+  "doesnt@exist": {
+    password: null,          // set by engine.js restoreEliteId / triggerEliteFlow
+    track: null,
+    objective: null,
+    lesson: null,
+    fs: {
+      type: "dir",
+      children: {
+        "report.txt": {
+          type: "file",
+          content: "Internal Incident Log\n\nSystem snapshot incomplete. Scan artifacts remain.\n\nDetected anomalies in network activity. Unusual service behavior observed.\n\nBackup routines appear interrupted. Some web resources may still be accessible."
+        },
+        ".cache": {
+          type: "dir",
+          children: {
+            "apt": {
+              type: "dir",
+              children: {
+                "pkgcache.bin": {
+                  type: "file",
+                  content: "[binary package cache — partial]\nlast updated: 2024-02-11 03:14:22\nentries: 2841 / expected: 4096\ntruncated — possible interrupted update"
+                }
+              }
+            },
+            "wget-hsts": {
+              type: "file",
+              content: "# HSTS Known Hosts — wget\n# Generated by wget\nlocalhost\t0\t1\t0"
+            },
+            "motd.legal-displayed": {
+              type: "file",
+              content: ""
+            },
+            "session.log": {
+              type: "file",
+              content: "session opened: 2024-02-11 03:09:41 uid=1001\nlast command: cat /var/www/backup/dump.dat\nsession closed: 2024-02-11 03:31:07"
+            }
+          }
+        },
+        ".history": {
+          type: "dir",
+          children: {
+            "bash_history": {
+              type: "file",
+              content: "nmap -sV 192.168.1.0/24\nssh root@192.168.1.50\ncd /var/www\nls -la\ncat /var/www/backup/dump.dat\ncurl http://localhost/config.php\ncd /var/www/backup/old\ncat notes.txt\ncat backup.log\nls -la /tmp\ncat /tmp/svc_dump.bin\nnmap -p 1-65535 localhost\ngrep -r password /var/www/\nhistory -c"
+            }
+          }
+        },
+        "tmp": {
+          type: "dir",
+          children: {
+            "svc_dump.bin": {
+              type: "file",
+              content: "[partial process dump — svc_monitor pid 1847]\nheap segment: 0x55a3c2e10000\nstack trace incomplete — signal SIGKILL received\ndump aborted at 2024-02-11 03:28:54"
+            },
+            "cron_stderr.txt": {
+              type: "file",
+              content: "/bin/sh: 1: /opt/backup_run.sh: not found\n/bin/sh: 1: /opt/backup_run.sh: not found\n/bin/sh: 1: /opt/backup_run.sh: not found"
+            },
+            ".lock": {
+              type: "file",
+              content: "pid=2204\nacquired=2024-02-11 03:10:05\nstale=yes"
+            }
+          }
+        },
+        "var": {
+          type: "dir",
+          children: {
+            "www": {
+              type: "dir",
+              children: {
+                "html": {
+                  type: "dir",
+                  children: {
+                    "index.php": {
+                      type: "file",
+                      content: "<?php\n// Site entry point\nrequire_once 'config.php';\n$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);\nif ($conn->connect_error) { die('Connection failed'); }\n?>\n<html><head><title>Internal Portal</title></head>\n<body><h2>System Status</h2><p>Service operational.</p></body></html>"
+                    },
+                    "config.php": {
+                      type: "file",
+                      content: "<?php\n// Database configuration\ndefine('DB_HOST', 'localhost');\ndefine('DB_USER', 'webapp');\ndefine('DB_PASS', 'Wk3!p9zX');\ndefine('DB_NAME', 'portal_db');\ndefine('APP_ENV', 'production');\n// TODO: move creds to env before next deploy\n?>"
+                    },
+                    "robots.txt": {
+                      type: "file",
+                      content: "User-agent: *\nDisallow: /backup/\nDisallow: /admin/\nDisallow: /config.php\nDisallow: /tmp/"
+                    },
+                    "README.md": {
+                      type: "file",
+                      content: "# Internal Web Portal\n\nDeployment: manual\nLast updated: 2024-02-08\n\n## Notes\n- PHP 7.4, Apache 2.4\n- DB backup runs nightly via cron (currently broken)\n- Do not expose /backup/ to public\n- config.php should not be web-accessible"
+                    }
+                  }
+                },
+                "backup": {
+                  type: "dir",
+                  children: {
+                    "web.conf": {
+                      type: "file",
+                      content: "ServerName localhost\nDocumentRoot /var/www/html\nErrorLog /var/log/apache2/error.log\nCustomLog /var/log/apache2/access.log combined"
+                    },
+                    "dump.dat": {
+                      // base64 of ROT13-encoded plaintext. Patched at runtime by engine.js.
+                      type: "file",
+                      content: "-- backup fragment --\nanVuZyBsYmggZnJyIHZmIGFiZyBqdW5nIHZnIGZycnpmLi4uCi91YnpyL1JZVkdSVlEvem5sb3Iucmt2ZmdmICBjbmZmamJlcTogUUxBTlpWUF9DTkZG\n-- end --"
+                    },
+                    "old": {
+                      type: "dir",
+                      children: {
+                        "old.conf": {
+                          type: "file",
+                          content: "# Apache vhost config — archived 2024-01-30\nServerName portal.internal\nDocumentRoot /var/www/html\nErrorLog /var/log/apache2/portal_error.log\n# SSL disabled — cert expired 2023-12-01\n# ProxyPass /api http://127.0.0.1:8080"
+                        },
+                        "backup.log": {
+                          type: "file",
+                          content: "2024-01-28 02:00:01 [INFO] backup started\n2024-01-28 02:00:04 [INFO] archiving /var/www/html...\n2024-01-28 02:01:33 [ERROR] write failed: disk quota exceeded\n2024-01-29 02:00:01 [INFO] backup started\n2024-01-29 02:00:03 [ERROR] /opt/backup_run.sh: no such file\n2024-01-30 02:00:01 [INFO] backup started\n2024-01-30 02:00:03 [ERROR] /opt/backup_run.sh: no such file"
+                        },
+                        "notes.txt": {
+                          type: "file",
+                          content: "Backup script moved during Jan migration — cron not updated.\nDisk filled up on the 28th, partial archive may be corrupt.\nweb.conf archived here before switching to nginx (never finished).\nTODO: verify dump.dat integrity — last rotation was incomplete."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "maybe.exists": {
+          type: "file",
+          content: "__protected__"
+        }
+      }
+    },
+    net: {
+      "localhost": [
+        { port: 21,  state: "open",   service: "ftp"    },
+        { port: 22,  state: "open",   service: "ssh"    },
+        { port: 25,  state: "open",   service: "smtp"   },
+        { port: 53,  state: "open",   service: "domain" },
+        { port: 80,  state: "open",   service: "http"   },
+        { port: 110, state: "open",   service: "pop3"   },
+        { port: 143, state: "open",   service: "imap"   },
+        { port: 443, state: "closed", service: "https"  }
+      ]
+    },
+    web: {
+      "http://localhost": `<!DOCTYPE html>
+<html>
+<head><title>Apache2 Ubuntu Default Page</title></head>
+<body>
+<h1>Apache2 Ubuntu Default Page</h1>
+<p>It works!</p>
+<p>This is the default welcome page used to test correct operation of the Apache2 server
+after installation on Ubuntu systems. It is based on the equivalent page on Debian,
+from which the Ubuntu Apache packaging is derived.</p>
+<p>If you can read this page, it means that the Apache HTTP server installed at this
+site is working properly. You should <b>replace this file</b> (located at
+<tt>/var/www/html/index.html</tt>) before continuing to operate your server.</p>
+<hr/>
+<p><small>Server at localhost Port 80 — maintenance snapshot may still be present in var/www/.</small></p>
+</body>
+</html>`
+    },
+    // rot13Out is patched by engine.js at runtime with real eliteId + dynPass
+    rot13Out: {
+      "var/www/backup/dump.dat": "/home/ELITEID/maybe.exists  password: DYNAMIC_PASS"
     }
   },
 
