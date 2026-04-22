@@ -12,7 +12,7 @@
 
     <!-- ── TOP BAR ── -->
     <div id="topbar">
-      <span class="title glitch">SHELLSCAPE v2.1</span>
+      <span class="title glitch">SHELLSCAPE v2.3</span>
       <span class="status" id="level-badge">NOT CONNECTED</span>
       <span class="clock" id="clock">00:00:00</span>
     </div>
@@ -41,6 +41,8 @@
     </div>
 
   </div>
+
+  <canvas id="badge-canvas" width="512" height="512" style="display:none"></canvas>
 
   <!-- JS load order matters: levels → commands → engine → terminal -->
   <script src="levels.js"></script>
