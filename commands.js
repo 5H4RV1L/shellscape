@@ -422,6 +422,7 @@ TERMINAL
   rot13(level, arg) {
     if (!arg)                 return { text: "Usage: rot13 <file>", cls: "err" };
     if (!(arg in level.files))return { text: `rot13: ${arg}: No such file`, cls: "err" };
+    if (level.rot13Out?.[arg]) return { text: level.rot13Out[arg], cls: "success" };
     return { text: rot13str(level.files[arg]), cls: "success" };
   },
 
@@ -638,13 +639,13 @@ TERMINAL
     document.getElementById("terminal").innerHTML = "";
     return null;
   },
-  
+
   report() {
     window.open("https://sharvil.site/#contact", "_blank");
     return {
       text: "Opening bug report portal...",
       cls: "info"
     };
-  }  
+  }
 
 };
